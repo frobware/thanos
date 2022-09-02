@@ -1,0 +1,32 @@
+# -*- mode: makefile -*-
+
+REGISTRY ?= quay.io
+IMAGE_ORG ?= $(USER)
+IMAGE_NAME ?= thanos-nslookup
+IMAGE_TAG ?= latest
+IMAGE_REF ?= $(IMAGE_ORG)/$(IMAGE_NAME):$(IMAGE_TAG)
+
+DOCKER ?= podman
+
+build:
+	go build -mod=vendor -o thanos-nslookup ./cmd/thanos-nslookup
+
+image: fmt vet vendor build
+	$(RM) thanos-nslookup
+	$(DOCKER) build -f Containerfile.thanos-nslookup -t $(IMAGE_REF) .
+
+push-image:
+	$(DOCKER) tag $(IMAGE_REF) $(REGISTRY)/$(IMAGE_REF)
+	$(DOCKER) push $(REGISTRY)/$(IMAGE_REF)
+
+vendor:
+	go mod vendor
+	go mod tidy
+
+fmt:
+	go fmt ./cmd/thanos-nslookup/...
+
+vet:
+	go vet ./cmd/thanos-nslookup/...
+
+.PHONY: build push-image vendor fmt vet
