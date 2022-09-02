@@ -1,0 +1,12 @@
+FROM registry.access.redhat.com/ubi8/go-toolset AS builder
+USER root
+WORKDIR /go/src
+COPY . .
+RUN make -f Makefile.thanos-nslookup
+RUN ls -l thanos-nslookup
+FROM registry.access.redhat.com/ubi8/ubi:latest
+WORKDIR /
+COPY --from=builder /go/src/thanos-nslookup /usr/local/bin/thanos-nslookup
+# 65532 is numeric for nonroot
+USER 65532:65532
+ENTRYPOINT ["/usr/local/bin/thanos-nslookup"]
