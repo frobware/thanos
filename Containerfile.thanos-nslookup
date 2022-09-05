@@ -2,11 +2,13 @@ FROM registry.access.redhat.com/ubi8/go-toolset AS builder
 USER root
 WORKDIR /go/src
 COPY . .
-RUN make -f Makefile.thanos-nslookup
-RUN ls -l thanos-nslookup
+RUN make -f Makefile.thanos-nslookup build
+RUN ls -l thanos-nslookup golang-nslookup-cgo-enabled golang-nslookup-cgo-disabled
 FROM registry.access.redhat.com/ubi8/ubi:latest
 WORKDIR /
 COPY --from=builder /go/src/thanos-nslookup /usr/local/bin/thanos-nslookup
+COPY --from=builder /go/src/golang-nslookup-cgo-enabled /usr/local/bin/golang-nslookup-cgo-enabled
+COPY --from=builder /go/src/golang-nslookup-cgo-disabled /usr/local/bin/golang-nslookup-cgo-disabled
 # 65532 is numeric for nonroot
 USER 65532:65532
-ENTRYPOINT ["/usr/local/bin/thanos-nslookup"]
+ENTRYPOINT ["/usr/bin/bash"]
