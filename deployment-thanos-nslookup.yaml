@@ -4,8 +4,7 @@ metadata:
   name: dnstest
 parameters:
 - name: IMAGE
-  #value: registry.int.frobware.com/amcdermo/thanos-nslookup:latest
-  value: quay.io/amcdermo/thanos-nslookup:latest
+  value: quay.io/amcdermo/thanos-dnstest@sha256:fe0452aa25e0ceba73c7d40dea7f6144f46d354a67b96a6bd7a091ad8b639996
   required: true
 - name: NAME
   value: "_grpc._tcp.prometheus-operated.openshift-monitoring.svc.cluster.local"
